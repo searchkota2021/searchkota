@@ -1,16 +1,15 @@
 <html>
 
 <head>
-    <title>Looking for</title>
+    <title>Looking for...</title>
+    <link rel="stylesheet" href="/css/style.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
             function showResult(filename) {
-                //var filename = "Data/1111.json";
-
                 $.getJSON(filename, function(result) {
                     var table_body =
-                        '<table border="1" id="result"><thead><tr><th>No</th><th>Business Name</th><th>Location</th></tr></thead><tbody>';
+                        '<table id="result"><thead><tr><th>No</th><th>Business Name</th><th>Location</th></tr></thead><tbody>';
                     for (i = 0; i < result.data.length; i++) {
                         table_body += "<tr>";
 
@@ -57,12 +56,12 @@
 
 <body>
     <div id="header">
-        <h2>Looking For</h2>
+        <h1>Looking For...</h1>
     </div>
 
     <div id="area">
-        <h4>Area Names</h4>
-        <table border="1px">
+        <h4>Select Area</h4>
+        <table>
             <tr>
                 <td>
                     <input type="radio" id="mn2" name="area" value="Mahaveer Nagar 2" checked />
@@ -77,8 +76,8 @@
     </div>
 
     <div id="category">
-        <h4>Category</h4>
-        <table border="1px">
+        <h4>Select Category</h4>
+        <table>
             <tr>
                 <td>
                     <input type="radio" id="hostel" name="category" value="Hostel" checked />
