@@ -1,0 +1,118 @@
+<html>
+
+<head>
+    <title>Looking for</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function showResult(filename) {
+                //var filename = "Data/1111.json";
+
+                $.getJSON(filename, function(result) {
+                    var table_body =
+                        '<table border="1" id="result"><thead><tr><th>No</th><th>Business Name</th><th>Location</th></tr></thead><tbody>';
+                    for (i = 0; i < result.data.length; i++) {
+                        table_body += "<tr>";
+
+                        table_body += "<td>";
+                        table_body += i + 1;
+                        table_body += "</td>";
+
+                        table_body += "<td>";
+                        table_body += result.data[i].name;
+                        table_body += "</td>";
+
+                        table_body += "<td>";
+
+                        table_body +=
+                            '<a href="' +
+                            result.data[i].link +
+                            '"target="_blank">' +
+                            result.data[i].link +
+                            "</a>";
+                        table_body += "</td>";
+
+                        table_body += "</tr>";
+                    }
+                    table_body += "</tbody></table>";
+                    $("#records_table").html(table_body);
+                }).fail(function() {
+                    $("#records_table").empty();
+                });
+            }
+
+            $("#submit").click(function() {
+                var areaRadioValue = $("input[name='area']:checked").attr("id");
+                var categoryRadioValue = $("input[name='category']:checked").attr(
+                    "id"
+                );
+
+                var filename =
+                    "Data/" + areaRadioValue + categoryRadioValue + ".json";
+                showResult(filename);
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div id="header">
+        <h2>Looking For</h2>
+    </div>
+
+    <div id="area">
+        <h4>Area Names</h4>
+        <table border="1px">
+            <tr>
+                <td>
+                    <input type="radio" id="mn2" name="area" value="Mahaveer Nagar 2" checked />
+                    <label for="mn2">Mahaveer Nagar 2</label>
+                </td>
+                <td>
+                    <input type="radio" id="mn3" name="area" value="Mahaveer Nagar 3" />
+                    <label for="mn3">Mahaveer Nagar 3</label>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="category">
+        <h4>Category</h4>
+        <table border="1px">
+            <tr>
+                <td>
+                    <input type="radio" id="hostel" name="category" value="Hostel" checked />
+                    <label for="hostel">Hostel</label>
+                </td>
+                <td>
+                    <input type="radio" id="mess" name="category" value="Mess" />
+                    <label for="mess">Mess</label>
+                </td>
+                <td>
+                    <input type="radio" id="foodcorner" name="category" value="Food Corner" />
+                    <label for="foodcorner">Food Corner</label>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <br />
+
+    <div id="submit">
+        <table>
+            <tr>
+                <td>
+                    <input type="button" value="Submit" id="submit" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="result">
+        <h4>Show Results</h4>
+
+        <div id="records_table"></div>
+    </div>
+</body>
+
+</html>
