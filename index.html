@@ -1,42 +1,58 @@
 <html>
 
 <head>
-    <title>Looking for...</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <script src="https://code.jquery.com/jquery-3.0.0.slim.min.js"></script>
+
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+
+    <title>Search Yaha</title>
+
+    <!-- <link rel="stylesheet" href="css/style.css" /> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.10.1/bootstrap-table.min.js"></script>
+
     <script>
         $(document).ready(function() {
-            function showResult(filename) {
+            $("#areaSelector button").click(function() {
+                $("#selectedAreaName").text($(this).text());
+            });
+
+            $("#catagorySelector button").click(function() {
+                $("#selectedCategory").text($(this).text());
+            });
+
+            function getJsonData(filename) {
+                $.ajaxSetup({
+                    async: false,
+                });
+
                 $.getJSON(filename, function(result) {
-                    var table_body =
-                        '<table id="result"><thead><tr><th>No</th><th>Business Name</th><th>Location</th></tr></thead><tbody>';
-                    for (i = 0; i < result.data.length; i++) {
-                        table_body += "<tr>";
+                    $("#noRecord").hide();
+                    $("#resultGrid").show();
 
-                        table_body += "<td>";
-                        table_body += i + 1;
-                        table_body += "</td>";
+                    //alert(JSON.stringify(result.data));
+                    $("#tableGrid").bootstrapTable("destroy");
 
-                        table_body += "<td>";
-                        table_body += result.data[i].name;
-                        table_body += "</td>";
-
-                        table_body += "<td>";
-
-                        table_body +=
-                            '<a href="' +
-                            result.data[i].link +
-                            '"target="_blank">' +
-                            result.data[i].link +
-                            "</a>";
-                        table_body += "</td>";
-
-                        table_body += "</tr>";
-                    }
-                    table_body += "</tbody></table>";
-                    $("#records_table").html(table_body);
+                    $("#tableGrid").bootstrapTable({
+                        data: result.data,
+                    });
                 }).fail(function() {
-                    $("#records_table").empty();
+                    //$("#tableGrid").bootstrapTable("destroy");
+                    //$("#records_table").empty();
+                    $("#resultGrid").hide();
+                    $("#noRecord").show();
                 });
             }
 
@@ -48,69 +64,135 @@
 
                 var filename =
                     "Data/" + areaRadioValue + categoryRadioValue + ".json";
-                showResult(filename);
+
+                //alert(filename);
+                //filename = "Data/mn2foodcorner.json";
+
+                getJsonData(filename);
             });
         });
     </script>
 </head>
 
 <body>
-    <div id="header">
-        <h1>Looking For...</h1>
+    <div class="text-white" style="background-color: gray">
+        <div class="d-inline pl-3">SearchYAHA</div>
+        <div class="d-inline float-right pr-3">
+            <div>
+                <span class="px-2">Pricing</span>
+                <span class="px-2"> Contact</span>
+            </div>
+        </div>
     </div>
 
-    <div id="area">
-        <h4>Select Area</h4>
-        <table>
-            <tr>
-                <td>
-                    <input type="radio" id="mn2" name="area" value="Mahaveer Nagar 2" checked />
-                    <label for="mn2">Mahaveer Nagar 2</label>
-                </td>
-                <td>
-                    <input type="radio" id="mn3" name="area" value="Mahaveer Nagar 3" />
-                    <label for="mn3">Mahaveer Nagar 3</label>
-                </td>
-            </tr>
-        </table>
+    <div class="container pt-2 d-flex justify-content-center">
+        <div class="row">
+            <div class="col">
+                <h1>Search YAHA</h1>
+            </div>
+        </div>
     </div>
 
-    <div id="category">
-        <h4>Select Category</h4>
-        <table>
-            <tr>
-                <td>
-                    <input type="radio" id="hostel" name="category" value="Hostel" checked />
-                    <label for="hostel">Hostel</label>
-                </td>
-                <td>
-                    <input type="radio" id="mess" name="category" value="Mess" />
-                    <label for="mess">Mess</label>
-                </td>
-                <td>
-                    <input type="radio" id="foodcorner" name="category" value="Food Corner" />
-                    <label for="foodcorner">Food Corner</label>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col pt-5 d-flex justify-content-center">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-secondary active">
+              <input
+                type="radio"
+                name="area"
+                id="mn2"
+                autocomplete="off"
+                checked
+              />
+              Mahaveer Nagar 2
+            </label>
+                    <label class="btn btn-secondary">
+              <input type="radio" name="area" id="mn3" autocomplete="off" />
+              Mahaveer Nagar 3
+            </label>
+                    <label class="btn btn-secondary">
+              <input
+                type="radio"
+                name="area"
+                id="talwandi"
+                autocomplete="off"
+              />
+              Talwandi
+            </label>
+                </div>
+            </div>
+        </div>
 
-    <br />
+        <div class="row">
+            <div class="col pt-5 d-flex justify-content-center">
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-secondary active">
+              <input
+                type="radio"
+                name="category"
+                id="hostel"
+                autocomplete="off"
+                checked
+              />
+              Hostel
+            </label>
+                    <label class="btn btn-secondary">
+              <input
+                type="radio"
+                name="category"
+                id="mess"
+                autocomplete="off"
+              />
+              Mess
+            </label>
+                    <label class="btn btn-secondary">
+              <input
+                type="radio"
+                name="category"
+                id="foodcorner"
+                autocomplete="off"
+              />
+              Food Corner
+            </label>
+                </div>
+            </div>
+        </div>
 
-    <div id="submit">
-        <table>
-            <tr>
-                <td>
-                    <input type="button" value="Submit" id="submit" />
-                </td>
-            </tr>
-        </table>
-    </div>
+        <div class="row pt-2">
+            <div class="col">
+                <div class="d-inline float-right pt-5">
+                    <span id="selectedAreaName"></span>
+                </div>
+            </div>
+            <div class="col pt-sm-5 d-flex justify-content-center">
+                <button type="button" class="btn btn-primary" id="submit">
+            Search YAHA
+          </button>
+            </div>
+            <div class="col">
+                <div class="d-inline float-left pt-5">
+                    <span id="selectedCategory"></span>
+                </div>
+            </div>
+        </div>
 
-    <div id="result">
-        <h4>Show Results</h4>
+        <div class="row pt-5" id="noRecord" style="display: none">
+            <div class="col">We are working hard to share more information.</div>
+        </div>
 
-        <div id="records_table"></div>
+        <div class="row pt-5" id="resultGrid" style="display: none">
+            <div class="col">
+                <table id="tableGrid" data-flat="true" data-search="true" data-height="400" data-virtual-scroll="true">
+                    <thead>
+                        <tr>
+                            <th data-field="name" data-sortable="true">Name</th>
+                            <th data-field="link" data-sortable="true">Link</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
 </body>
 
