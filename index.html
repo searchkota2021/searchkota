@@ -7,7 +7,6 @@
 
     <script src="https://code.jquery.com/jquery-3.0.0.slim.min.js"></script>
 
-    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <!-- Bootstrap CSS -->
@@ -25,13 +24,7 @@
 
     <script>
         $(document).ready(function() {
-            $("#areaSelector button").click(function() {
-                $("#selectedAreaName").text($(this).text());
-            });
 
-            $("#catagorySelector button").click(function() {
-                $("#selectedCategory").text($(this).text());
-            });
 
             function getJsonData(filename) {
                 $.ajaxSetup({
@@ -42,18 +35,42 @@
                     $("#noRecord").hide();
                     $("#resultGrid").show();
 
-                    //alert(JSON.stringify(result.data));
-                    $("#tableGrid").bootstrapTable("destroy");
+                    $("#tableGrid")
+                        .bootstrapTable("destroy")
+                        .bootstrapTable({
+                            columns: [
+                                [{
+                                    field: "name",
+                                    title: "Businesss Name",
+                                    sortable: true,
+                                    align: "center"
+                                }, {
+                                    field: "contact",
+                                    title: "Contact Us",
+                                    sortable: true,
+                                    align: "center"
+                                }, {
+                                    field: "link",
+                                    title: "Find Us",
+                                    align: "center",
+                                    clickToSelect: false,
+                                    formatter: operateFormatter
+                                }],
+                            ],
+                            data: result.data,
+                        });
 
-                    $("#tableGrid").bootstrapTable({
-                        data: result.data,
-                    });
                 }).fail(function() {
-                    //$("#tableGrid").bootstrapTable("destroy");
-                    //$("#records_table").empty();
                     $("#resultGrid").hide();
                     $("#noRecord").show();
                 });
+            }
+
+            function operateFormatter(value, row, index) {
+                return (
+                    '<a href="' + value + '" target="_blank">Here</a>'
+
+                )
             }
 
             $("#submit").click(function() {
@@ -65,9 +82,6 @@
                 var filename =
                     "Data/" + areaRadioValue + categoryRadioValue + ".json";
 
-                //alert(filename);
-                //filename = "Data/mn2foodcorner.json";
-
                 getJsonData(filename);
             });
         });
@@ -76,11 +90,11 @@
 
 <body>
     <div class="text-white" style="background-color: gray">
-        <div class="d-inline pl-3">SearchYAHA</div>
+        <div class="d-inline pl-3">Welcome to SearchYAHA</div>
         <div class="d-inline float-right pr-3">
             <div>
-                <span class="px-2">Pricing</span>
-                <span class="px-2"> Contact</span>
+                <!-- <span class="px-2">Pricing</span> -->
+                <!-- <span class="px-2"> Contact</span> -->
             </div>
         </div>
     </div>
@@ -160,36 +174,23 @@
         </div>
 
         <div class="row pt-2">
-            <div class="col">
-                <div class="d-inline float-right pt-5">
-                    <span id="selectedAreaName"></span>
-                </div>
-            </div>
-            <div class="col pt-sm-5 d-flex justify-content-center">
+            <div class="col pt-5 d-flex justify-content-center">
                 <button type="button" class="btn btn-primary" id="submit">
             Search YAHA
           </button>
             </div>
-            <div class="col">
-                <div class="d-inline float-left pt-5">
-                    <span id="selectedCategory"></span>
-                </div>
-            </div>
         </div>
 
         <div class="row pt-5" id="noRecord" style="display: none">
-            <div class="col">We are working hard to share more information.</div>
+            <div class="col d-flex justify-content-center"><b>We are working hard to share more information.</b></div>
         </div>
 
         <div class="row pt-5" id="resultGrid" style="display: none">
             <div class="col">
-                <table id="tableGrid" data-flat="true" data-search="true" data-height="400" data-virtual-scroll="true">
-                    <thead>
-                        <tr>
-                            <th data-field="name" data-sortable="true">Name</th>
-                            <th data-field="link" data-sortable="true">Link</th>
-                        </tr>
-                    </thead>
+                <table id="tableGrid" data-flat="true" data-search="true" data-height="400" data-virtual-scroll="true" data-click-to-select="true"></table>
+                <thead>
+
+                </thead>
                 </table>
             </div>
         </div>
