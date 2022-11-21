@@ -12,9 +12,10 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
 
-    <title>Search Yaha</title>
+    <!-- Page Title -->
+    <title>Search Kota</title>
 
-    <!-- <link rel="stylesheet" href="css/style.css" /> -->
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -25,6 +26,19 @@
     <script>
         $(document).ready(function() {
 
+            $('a').click(function() {
+                var areaRadioValue = $("input[name='area']:checked").attr("id");
+                var categoryRadioValue = $(this).attr("id");
+
+                if (!areaRadioValue) {
+                    areaRadioValue = "kunhari";
+                }
+
+                var filename = "Data/" + areaRadioValue + categoryRadioValue + ".json";
+
+                getJsonData(filename);
+
+            })
 
             function getJsonData(filename) {
                 $.ajaxSetup({
@@ -32,38 +46,79 @@
                 });
 
                 $.getJSON(filename, function(result) {
-                    $("#noRecord").hide();
-                    $("#resultGrid").show();
-
-                    $("#tableGrid")
-                        .bootstrapTable("destroy")
-                        .bootstrapTable({
-                            columns: [
-                                [{
-                                    field: "name",
-                                    title: "Businesss Name",
-                                    sortable: true,
-                                    align: "center"
-                                }, {
-                                    field: "contact",
-                                    title: "Contact Us",
-                                    sortable: true,
-                                    align: "center"
-                                }, {
-                                    field: "link",
-                                    title: "Find Us",
-                                    align: "center",
-                                    clickToSelect: false,
-                                    formatter: operateFormatter
-                                }],
-                            ],
-                            data: result.data,
-                        });
-
-                }).fail(function() {
-                    $("#resultGrid").hide();
-                    $("#noRecord").show();
+                    prepareData(result.data)
+                }).fail(function() { // In case file not found (404)
+                    showDataToGrid() // Show skelton grid without data
                 });
+            }
+
+            function prepareData(url) {
+                fetch(url)
+                    .then((res) => res.text())
+                    .then((rep) => {
+                        const data = JSON.parse(rep.substr(47).slice(0, -2));
+
+                        var businessName = "";
+                        var contactno = "";
+                        var gurl = "";
+                        var dataDetail = [];
+
+                        for (var i = 0; i < data.table.rows.length; i++) {
+                            var businessNameObj = data.table.rows[i].c[1];
+                            businessName = businessNameObj === null ? '' : businessNameObj.v;
+
+                            var contactnoObj = data.table.rows[i].c[2];
+                            contactno = contactnoObj === null ? '' : contactnoObj.v;
+
+                            var gurlObj = data.table.rows[i].c[3];
+                            gurl = gurlObj === null ? '' : gurlObj.v;
+
+                            var dataItem = {};
+                            dataItem["name"] = businessName;
+                            dataItem["contact"] = contactno;
+                            dataItem["link"] = gurl;
+
+                            dataDetail.push(dataItem);
+                        }
+                        showDataToGrid(dataDetail)
+                    }).catch(function(err) {
+                        showDataToGrid() // Show skelton grid without data
+                    });
+            }
+
+            function showNoRecordFound() {
+                $("#noRecord").show();
+                $("#resultGrid").hide();
+            }
+
+            function showDataToGrid(dataDetail) {
+                $("#noRecord").hide();
+                $("#resultGrid").show();
+
+                $("#tableGrid")
+                    .bootstrapTable("destroy")
+                    .bootstrapTable({
+                        columns: [
+                            [{
+                                field: "name",
+                                title: "Businesss Name",
+                                sortable: true,
+                                align: "center"
+                            }, {
+                                field: "contact",
+                                title: "Contact Us",
+                                sortable: true,
+                                align: "center"
+                            }, {
+                                field: "link",
+                                title: "Find Us",
+                                align: "center",
+                                clickToSelect: false,
+                                formatter: operateFormatter
+                            }],
+                        ],
+                        data: dataDetail,
+                    });
             }
 
             function operateFormatter(value, row, index) {
@@ -73,121 +128,99 @@
                 )
             }
 
-            $("#submit").click(function() {
-                var areaRadioValue = $("input[name='area']:checked").attr("id");
-                var categoryRadioValue = $("input[name='category']:checked").attr(
-                    "id"
-                );
-
-                var filename =
-                    "Data/" + areaRadioValue + categoryRadioValue + ".json";
-
-                getJsonData(filename);
-            });
         });
     </script>
 </head>
 
 <body>
+    <!-- Top Menu Section-->
     <div class="text-white" style="background-color: gray">
-        <div class="d-inline pl-3">Welcome to SearchYAHA</div>
+        <!-- <div class="d-inline pl-3">Welcome to SearchKOTA</div> -->
+        <div class="d-inline pl-3"><a href="index.html" style="color: white"> Welcome to SearchKOTA </a> </div>
         <div class="d-inline float-right pr-3">
             <div>
                 <!-- <span class="px-2">Pricing</span> -->
+                <span class="px-2"> <a href="https://sites.google.com/view/data-collection-searchkota/home" target="_blank" style="color: white"> Submit Request </a> </span>
                 <!-- <span class="px-2"> Contact</span> -->
             </div>
         </div>
     </div>
 
+    <!-- Header Section-->
     <div class="container pt-2 d-flex justify-content-center">
         <div class="row">
             <div class="col">
-                <h1>Search YAHA</h1>
+                <h1>Search KOTA</h1>
             </div>
         </div>
     </div>
 
+    <!-- Page Container Section (Area Section + Category Section + Status Message + Search Result Grid)-->
     <div class="container">
+
+        <!-- Area Row Section-->
         <div class="row">
             <div class="col pt-5 d-flex justify-content-center">
                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-secondary active">
-              <input
-                type="radio"
-                name="area"
-                id="mn2"
-                autocomplete="off"
-                checked
-              />
-              Mahaveer Nagar 2
-            </label>
+
+                    <!-- Area A Section-->
                     <label class="btn btn-secondary">
-              <input type="radio" name="area" id="mn3" autocomplete="off" />
-              Mahaveer Nagar 3
-            </label>
-                    <label class="btn btn-secondary">
-              <input
-                type="radio"
-                name="area"
-                id="talwandi"
-                autocomplete="off"
-              />
-              Talwandi
-            </label>
+                    <input type="radio" name="area" id="kunhari" autocomplete="off" />
+                    Kunhari
+                    </label>
+
                 </div>
             </div>
         </div>
 
+        <hr style="border-top:5px solid #6c757d">
+
+        <!-- Category Row Section-->
         <div class="row">
             <div class="col pt-5 d-flex justify-content-center">
-                <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-secondary active">
-              <input
-                type="radio"
-                name="category"
-                id="hostel"
-                autocomplete="off"
-                checked
-              />
-              Hostel
-            </label>
-                    <label class="btn btn-secondary">
-              <input
-                type="radio"
-                name="category"
-                id="mess"
-                autocomplete="off"
-              />
-              Mess
-            </label>
-                    <label class="btn btn-secondary">
-              <input
-                type="radio"
-                name="category"
-                id="foodcorner"
-                autocomplete="off"
-              />
-              Food Corner
-            </label>
+
+                <!-- Hostel Category -->
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle text-white" type="button" data-toggle="dropdown" style="background-color: #6c757d;"> Hostels
+                        </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" id="hb">Boys</a></li>
+                        <li><a href="#" id="hg">Girls</a></li>
+                    </ul>
                 </div>
+
+                <!-- Restaurants Category -->
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle text-white" type="button" data-toggle="dropdown" style="background-color: #6c757d;"> Restaurants
+                </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" id="rveg">Veg</a></li>
+                        <li><a href="#" id="rnveg">Non-Veg</a></li>
+                        <li><a href="#" id="rf">Both</a></li>
+                    </ul>
+                </div>
+
+                <!-- Test Category -->
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle text-white" type="button" data-toggle="dropdown" style="background-color: #6c757d;"> Information Technology (IT)
+                </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" id="it">Information Technology (IT)</a></li>
+                    </ul>
+                </div>
+
             </div>
         </div>
 
-        <div class="row pt-2">
-            <div class="col pt-5 d-flex justify-content-center">
-                <button type="button" class="btn btn-primary" id="submit">
-            Search YAHA
-          </button>
-            </div>
-        </div>
-
+        <!-- Status Message Sections -->
         <div class="row pt-5" id="noRecord" style="display: none">
             <div class="col d-flex justify-content-center"><b>We are working hard to share more information.</b></div>
         </div>
 
+        <!-- Search Result Grid Section -->
         <div class="row pt-5" id="resultGrid" style="display: none">
             <div class="col">
-                <table id="tableGrid" data-flat="true" data-search="true" data-height="400" data-virtual-scroll="true" data-click-to-select="true"></table>
+                <table id="tableGrid" data-flat="true" data-search="true" data-height="400" data-virtual-scroll="true" data-click-to-select="true" data-pagination="false"></table>
                 <thead>
 
                 </thead>
